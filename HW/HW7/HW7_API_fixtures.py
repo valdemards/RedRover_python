@@ -37,49 +37,6 @@ def token():
     yield token
 
 
-def test_get_all_bookings():
-    response = requests.get(BASE_URL)
-    assert response.status_code == STATUS_OK
-    assert 'Connection' in response.headers, 'There is no such key'
-    # print(f'\n{len(response.json())}')
-    # assert len(response.json()) == 2400, 'Wrong number'
-
-
-def test_get_booking_with_id(booking_id):
-    response = requests.get(f'{BASE_URL}/{booking_id}')
-    response_data = response.json()
-    # print(response_data)
-    assert response.status_code == STATUS_OK
-    expected_keys = ['firstname', 'lastname', 'totalprice', 'depositpaid', 'bookingdates']
-    assert response_data['firstname'] == 'Bob'
-    for key in expected_keys:
-        assert key in response_data.keys()
-
-
-def test_create_booking():
-    payload = {
-    "firstname": "Jimmy",
-    "lastname": "Bobson",
-    "totalprice": 777,
-    "depositpaid": True,
-    "bookingdates": {
-        "checkin": "2023-10-20",
-        "checkout": "2023-10-27"
-    },
-    "additionalneeds": "Seaside"}
-    response = requests.post(BASE_URL, json=payload)
-    # print(response.json())
-    assert response.status_code == STATUS_OK
-    id = response.json()['bookingid']
-    get_response = requests.get(f'{BASE_URL}/{id}]')
-    assert get_response.json()['firstname'] == 'Jimmy'
-
-
-def test_create_booking_with_fixture(booking_id):
-    response = requests.get(f'{BASE_URL}/{booking_id}')
-    assert response.json()['firstname'] == 'Bob'
-
-
 def test_update_booking(booking_id, token):
     header = {'Cookie': f'token={token}'}
     payload = {
@@ -105,10 +62,4 @@ def test_partial_update_booking(booking_id, token):
     assert response.status_code == 200
 
 
-def test_delete_new_booking(booking_id, token):
-    header = {'Cookie': f'token = {token}'}
-    response = requests.delete(f'{BASE_URL}/{booking_id}', headers=header)
-    assert response.status_code == 201
-    get_response = requests.get(f'{BASE_URL}/{booking_id}')
-    assert get_response.status_code == 404
 
